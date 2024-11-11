@@ -1,44 +1,34 @@
 import customtkinter as ctk
-
-typeusuoutfunc = 0
+import json
+import os
 
 ctk.set_appearance_mode("system")
 ctk.set_default_color_theme("blue")
 
+def loadusu():
+    if os.path.exists("usuarios.json"):
+        with open("usuarios.json","r") as arquivo:
+            return json.load(arquivo)
+    else:
+        return []
+
+def salvarusuarios(usuarios):
+    with open("usuarios.json","w") as arquivo:
+        json.dump(usuarios,arquivo, indent=4)
+
+
 def veri01():
-    usuario_input = entrusu.get()
-    senha_input = entrpass.get()
-    if usuario_input != "" or senha_input != "":
-        try:
-            with open('usuarios.txt','r') as arquivo_usuarios,\
-                 open('senhas.txt','r') as arquivos_senhas,\
-                 open('admin.txt','r') as arquivo_permissões:
-                usuarios = arquivo_usuarios.readlines()
-                senhas = arquivos_senhas.readlines()
-                typeusu = arquivo_permissões.readlines()
+    usuario = entrusu.get()
+    senha = entrpass.get()
+    
+    usuarios = loadusu()
 
-                if len(usuarios) != len(senhas) or len(usuarios) != len(typeusu):
-                    return False, None
+    for user in usuarios:
+        if user["usuario"] == usuario and user["senha"] == senha:
+            return user["tipo"]
+            
+    return None
 
-                for i in range(len(usuarios)):
-                    usuario = usuarios[i].strip()
-                    senha = senhas[i].strip()
-
-                    if usuario == usuario_input and senha == senha_input:
-                        return True, typeusu
-                        
-            return False
-        except FileNotFoundError:
-            return False
-    veri_typeusu(typeusuoutfunc)
-
-def veri_typeusu(typeusuvarinfunc):
-    autentic, permissao = veri01()
-    if autentic:
-        if permissao == 'admin':
-            typeusuvarinfunc = 1
-        else:
-            typeusuvarinfunc = 0
 
 def veri02():
     if veri01():
@@ -46,10 +36,17 @@ def veri02():
         #Janela Principal
         mainjnl = ctk.CTk()
         mainjnl.title("Página Principal")
-        mainjnl.geometry("500x500")
+        mainjnl.geometry("550x550")
         mainjnl.resizable(False,False)
 
+        labelprinc = ctk.CTkLabel(mainjnl,text=f"Bem vindo",font=("Calibri",50),bg_color="#1b69cf",width=2000)
+        labelprinc.pack(pady=10)
+
+        
+
         mainjnl.mainloop()
+    else:
+        pass
 
 def switchpass():
     if entrpass.cget('show') == '*':
@@ -59,28 +56,30 @@ def switchpass():
         entrpass.configure(show='*')
         mudarmodopassbtn.configure(text='Mostrar Senha')
 
+
 def funcriarconta():
     def criarcontaint():
-        usuario = criarcontausu.get()
+        usuarios = loadusu()
+    
+        usuario  = criarcontausu.get()
         senha = criarcontapass.get()
+
+        for user in usuarios:
+            if user["usuario"] == usuario:
+                return
         
-        if usuario != "" or senha != "":
-            with open("usuarios.txt","r") as arquivo_usuarios:
-                for linha in arquivo_usuarios:
-                    usuario_existente = linha.strip()
-                    if usuario == usuario_existente:
-                        return
-        
-            with open('usuarios.txt',"a") as arquivo_usuarios,\
-                 open('senhas.txt','a') as arquivo_senhas,\
-                 open('admin.txt','a') as arquivo_permissoes:
-                arquivo_usuarios.write(f"\n{usuario}")
-                arquivo_senhas.write(f"\n{senha}")
-                arquivo_permissoes.write(f"\nusuario")
-            scrcreateaccont.destroy()
-        
-        else:
-            pass
+        tipo = "comum"
+
+        newuser = {
+            "usuario": usuario,
+            "senha":senha,
+            "tipo":tipo
+        }
+
+        usuarios.append(newuser)
+
+        salvarusuarios(usuarios)
+        scrcreateaccont.destroy()
 
     scrcreateaccont = ctk.CTk()
     scrcreateaccont.title("Criar Conta")
