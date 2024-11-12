@@ -39,10 +39,11 @@ def veri02():
         mainjnl.geometry("550x550")
         mainjnl.resizable(False,False)
 
-        labelprinc = ctk.CTkLabel(mainjnl,text=f"Bem vindo",font=("Calibri",50),bg_color="#1b69cf",width=2000)
+        labelprinc = ctk.CTkLabel(mainjnl,text=f"Bem vindo",font=("Calibri",40),bg_color="#1b69cf",width=2000)
         labelprinc.pack(pady=10)
 
-        
+        label02 = ctk.CTkLabel(mainjnl,text="Este é o Seu Gerenciador",font=("Segoe UI",25),bg_color="#0e4082",width=2000)
+        label02.pack(pady=5)
 
         mainjnl.mainloop()
     else:
